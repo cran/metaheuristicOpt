@@ -1,0 +1,18 @@
+Package: metaheuristicOpt
+Title: Metaheuristic for Optimization
+Version: 1.0.0
+Authors@R: c(
+    person("Lala", "Septem Riza", email = "lala.s.riza@upi.edu", role = c("aut","cre")),
+    person("Iip", email = "iip@student.upi.edu", role = "aut"),
+    person("Eddy", "Prasetyo Nugroho", email = "eddypn@upi.edu", role = "aut"))
+Author: Lala Septem Riza [aut, cre], Iip [aut], Eddy Prasetyo Nugroho [aut]
+Maintainer: Lala Septem Riza <lala.s.riza@upi.edu>
+Description: An implementation of metaheuristic algorithms for continuous
+	optimization. Currently, the package contains the implementations of the following algorithms: particle swarm optimization (Kennedy and Eberhart, 1995), ant lion optimizer (Mirjalili, 2015 <doi:10.1016/j.advengsoft.2015.01.010>), grey wolf optimizer (Mirjalili et al., 2014 <doi:10.1016/j.advengsoft.2013.12.007>), dragonfly algorithm (Mirjalili, 2015 <doi:10.1007/s00521-015-1920-1>), firefly algorithm (Yang, 2009 <doi:10.1007/978-3-642-04944-6_14>), genetic algorithm (Holland, 1992, ISBN:978-0262581110), grasshopper optimisation algorithm (Saremi et al., 2017 <doi:10.1016/j.advengsoft.2017.01.004>), harmony search algorithm (Mahdavi et al., 2007 <doi:10.1016/j.amc.2006.11.033>), moth flame optimizer (Mirjalili, 2015 <doi:10.1016/j.knosys.2015.07.006>, sine cosine algorithm (Mirjalili, 2016 <doi:10.1016/j.knosys.2015.12.022>) and whale optimization algorithm (Mirjalili and Lewis, 2016 <doi:10.1016/j.advengsoft.2016.01.008>). 
+Depends: R (>= 3.4.0)
+License: GPL (>= 2) | file LICENSE
+NeedsCompilation: no
+RoxygenNote: 6.0.1
+Packaged: 2017-10-16 03:35:04 UTC; iipar
+Repository: CRAN
+Date/Publication: 2017-10-16 12:15:04 UTC

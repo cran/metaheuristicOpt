@@ -5,7 +5,7 @@
 #  Author: Iip
 #  Co-author: -
 #  Supervisors: Lala Septem Riza, Eddy Prasetyo Nugroho
-#   
+#
 #
 #  This package is free software: you can redistribute it and/or modify it under
 #  the terms of the GNU General Public License as published by the Free Software
@@ -16,98 +16,104 @@
 #  A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 #
 #############################################################################
-#' This is the internal function that implements Particle Swarm Optimization 
-#' Algorithm. It is used to solve continuous optimization tasks. 
+#' This is the internal function that implements Particle Swarm Optimization
+#' Algorithm. It is used to solve continuous optimization tasks.
 #' Users do not need to call it directly,
 #' but just use \code{\link{metaOpt}}.
 #'
-#' This algorithm was proposed by Kennedy and Eberhart in 1995, inspired by
+#' This algorithm was proposed by (Kennedy & Eberhart, 1995), inspired by
 #' the behaviour of the social animals/particles, like a flock of birds in
 #' a swarm. The inertia weight that proposed by Shi and Eberhart is used to
 #' increasing the performance of PSO.
-#' 
-#' In order to find the optimal solution, the algorithm follow the following steps. 
+#'
+#' In order to find the optimal solution, the algorithm follow the following steps.
 #' \itemize{
-#' \item Initialization: Initialize the first population of particles and its corresponding 
+#' \item Initialization: Initialize the first population of particles and its corresponding
 #'       velocity. Then, calculate the fitness of particles and find the best position as
 #'       Global Best and Local Best.
 #' \item Update Velocity: Every particle move around search space with specific velocity.
 #'       In every iteration, the velocity is depend on two things, Global best and Local best.
-#'       Global best is the best position of particle obtained so far, and Local best is the best solution 
+#'       Global best is the best position of particle obtained so far, and Local best is the best solution
 #'       in current iteration.
 #' \item Update particle position. After calculating the new velocity, then the particle move around search
 #'       with the new velocity.
 #' \item Update Global best and local best if the new particle become fitter.
-#' \item Check termination criteria, if termination criterion is satisfied, return the 
+#' \item Check termination criteria, if termination criterion is satisfied, return the
 #'       Global best as the optimal solution for given problem. Otherwise, back to Update Velocity steps.
-#'} 
-#' 
+#'}
+#'
 #' @title Optimization using Prticle Swarm Optimization
 #'
 #' @param FUN an objective function or cost function,
 #'
 #' @param optimType a string value that represent the type of optimization.
 #'        There are two option for this arguments: \code{"MIN"} and \code{"MAX"}.
-#'        The default value is \code{"MIN"}, which the function will do minimization. 
+#'        The default value is \code{"MIN"}, which the function will do minimization.
 #'        Otherwise, you can use \code{"MAX"} for maximization problem.
+#'        The default value is \code{"MIN"}.
 #'
-#' @param numVar a positive integer to determine the number variable.
+#' @param numVar a positive integer to determine the number variables.
 #'
-#' @param numPopulation a positive integer to determine the number population.
+#' @param numPopulation a positive integer to determine the number populations. The default value is 40.
 #'
-#' @param maxIter a positive integer to determine the maximum number of iteration.
+#' @param maxIter a positive integer to determine the maximum number of iterations. The default value is 500.
 #'
-#' @param rangeVar a matrix (\eqn{2 \times n}) containing the range of variables, 
+#' @param rangeVar a matrix (\eqn{2 \times n}) containing the range of variables,
 #'        where \eqn{n} is the number of variables, and first and second rows
-#'        are the lower bound (minimum) and upper bound (maximum) values, respectively. 
-#'        If all variable have equal upper bound, you can define \code{rangeVar} as 
+#'        are the lower bound (minimum) and upper bound (maximum) values, respectively.
+#'        If all variable have equal upper bound, you can define \code{rangeVar} as
 #'        matrix (\eqn{2 \times 1}).
 #'
-#' @param Vmax a positive integer to determine the maximum particle's velocity.
+#' @param Vmax a positive integer to determine the maximum particle's velocity. The default value is 2.
 #'
-#' @param ci a positive integer to determine individual cognitive.
+#' @param ci a positive integer to determine individual cognitive. The default value is 1.49445.
 #'
-#' @param cg a positive integer to determine group cognitive.
+#' @param cg a positive integer to determine group cognitive. The default value is 1.49445.
 #'
-#' @param w a positive integer to determine inertia weight.
-#' 
+#' @param w a positive integer to determine inertia weight. The default value is 0.729.
+#'
 #' @importFrom graphics plot
 #' @importFrom stats runif
 #' @importFrom utils setTxtProgressBar txtProgressBar
 #' @seealso \code{\link{metaOpt}}
-#' 
+#'
 #' @examples
-#' ################################## 
-#' ## Optimizing the sphere function
-#' 
-#' # define sphere function as objective function
-#' sphere <- function(X){
-#'     return(sum(X^2))
+#' ##################################
+#' ## Optimizing the schewefel's problem 1.2 function
+#'
+#' # define schewefel's problem 1.2 function as objective function
+#' schewefels1.2 <- function(x){
+#'   dim <- length(x)
+#'   result <- 0
+#'     for(i in 1:dim){
+#'        result <- result + sum(x[1:i])^2
+#'    }
+#'   return(result)
 #' }
-#' 
-#' ## Define parameter 
+#'
+#' ## Define parameter
 #' Vmax <- 2
 #' ci <- 1.5
 #' cg <- 1.5
 #' w <- 0.7
 #' numVar <- 5
 #' rangeVar <- matrix(c(-10,10), nrow=2)
-#' 
+#'
 #' ## calculate the optimum solution using Particle Swarm Optimization Algorithm
-#' resultPSO <- PSO(sphere, optimType="MIN", numVar, numPopulation=20, 
+#' resultPSO <- PSO(schewefels1.2, optimType="MIN", numVar, numPopulation=20,
 #'                  maxIter=100, rangeVar, Vmax, ci, cg, w)
-#' 
-#' ## calculate the optimum value using sphere function
-#' optimum.value <- sphere(resultPSO)
-#' 
-#' @return \code{Vector [v1, v2, ..., vn]} where \code{n} is number variable 
+#'
+#' ## calculate the optimum value using schewefel's problem 1.2 function
+#' optimum.value <- schewefels1.2(resultPSO)
+#'
+#' @return \code{Vector [v1, v2, ..., vn]} where \code{n} is number variable
 #'         and \code{vn} is value of \code{n-th} variable.
-#' 
+#'
 #' @references
 #' Kennedy, J. and Eberhart, R. C. Particle swarm optimization.
 #' Proceedings of IEEE International Conference on Neural Networks, Piscataway, NJ. pp. 1942-1948, 1995
-#' 
-#' Shi, Y. and Eberhart, R. C. A modified particle swarm optimizer. 
+#'
+#' Shi, Y. and Eberhart, R. C. A modified particle swarm optimizer.
 #' Proceedings of the IEEE Congress on Evolutionary Computation (CEC 1998), Piscataway, NJ. pp. 69-73, 1998
 #' @export
 
@@ -118,7 +124,7 @@ PSO <- function(FUN, optimType="MIN", numVar, numPopulation=40, maxIter=500, ran
 	# parsing rangeVar to lowerBound and upperBound
 	lowerBound <- rangeVar[1,]
 	upperBound <- rangeVar[2,]
-	
+
 	# if user define the same upper bound and lower bound for each dimension
 	if(dimension==1){
 		dimension <- numVar
@@ -174,7 +180,7 @@ engine.PSO <- function(FUN, optimType, maxIter, lowerBound, upperBound, Vmax, ci
 
 				# update the particle velocity
 				newV <- w * velocity[i,d] + ci*ri*(Lbest[i,d]-particles[i,d]) + cg*rg*(Gbest[d]-particles[i,d])
-				
+
 				# check range velocity
 				if(newV < -Vmax) newV <- -Vmax
 				if(newV > Vmax) newV <- Vmax

@@ -4,83 +4,85 @@
 \alias{GWO}
 \title{Optimization using Grey Wolf Optimizer}
 \usage{
-GWO(FUN, optimType = "MIN", numVar, numPopulation = 40, maxIter = 500,
-  rangeVar)
+GWO(FUN, optimType = "MIN", numVar, numPopulation = 40,
+  maxIter = 500, rangeVar)
 }
 \arguments{
 \item{FUN}{an objective function or cost function,}
 
 \item{optimType}{a string value that represent the type of optimization.
 There are two option for this arguments: \code{"MIN"} and \code{"MAX"}.
-The default value is \code{"MIN"}, which the function will do minimization. 
-Otherwise, you can use \code{"MAX"} for maximization problem.}
+The default value is \code{"MIN"}, which the function will do minimization.
+Otherwise, you can use \code{"MAX"} for maximization problem.
+The default value is \code{"MIN"}.}
 
-\item{numVar}{a positive integer to determine the number variable.}
+\item{numVar}{a positive integer to determine the number variables.}
 
-\item{numPopulation}{a positive integer to determine the number population.}
+\item{numPopulation}{a positive integer to determine the number populations. The default value is 40.}
 
-\item{maxIter}{a positive integer to determine the maximum number of iteration.}
+\item{maxIter}{a positive integer to determine the maximum number of iterations. The default value is 500.}
 
-\item{rangeVar}{a matrix (\eqn{2 \times n}) containing the range of variables, 
+\item{rangeVar}{a matrix (\eqn{2 \times n}) containing the range of variables,
 where \eqn{n} is the number of variables, and first and second rows
-are the lower bound (minimum) and upper bound (maximum) values, respectively. 
-If all variable have equal upper bound, you can define \code{rangeVar} as 
+are the lower bound (minimum) and upper bound (maximum) values, respectively.
+If all variable have equal upper bound, you can define \code{rangeVar} as
 matrix (\eqn{2 \times 1}).}
 }
 \value{
-\code{Vector [v1, v2, ..., vn]} where \code{n} is number variable 
+\code{Vector [v1, v2, ..., vn]} where \code{n} is number variable
         and \code{vn} is value of \code{n-th} variable.
 }
 \description{
-This is the internal function that implements Grey Wolf Optimizer 
-Algorithm. It is used to solve continuous optimization tasks. 
+This is the internal function that implements Grey Wolf Optimizer
+Algorithm. It is used to solve continuous optimization tasks.
 Users do not need to call it directly,
 but just use \code{\link{metaOpt}}.
 }
 \details{
-This algorithm was proposed by Mirjalili in 2014, inspired by the behaviour of grey
-wolf (Canis lupus). The GWO algorithm mimics the leadership hierarchy and hunting 
-mechanism of grey wolves in nature. Four types of grey wolves such as alpha, beta, 
-delta, and omega are employed for simulating the leadership hierarchy. 
-In addition, the three main steps of hunting, searching for prey, encircling prey, 
+This algorithm was proposed by (Mirjalili, 2014), inspired by the behaviour of grey
+wolf (Canis lupus). The GWO algorithm mimics the leadership hierarchy and hunting
+mechanism of grey wolves in nature. Four types of grey wolves such as alpha, beta,
+delta, and omega are employed for simulating the leadership hierarchy.
+In addition, the three main steps of hunting, searching for prey, encircling prey,
 and attacking prey, are implemented.
 
-In order to find the optimal solution, the algorithm follow the following steps. 
+In order to find the optimal solution, the algorithm follow the following steps.
 \itemize{
-\item Initialization: Initialize the first population of grey wolf randomly, 
+\item Initialization: Initialize the first population of grey wolf randomly,
       calculate their fitness and find the best wolf as alpha, second best as
       beta and third best as delta. The rest of wolf assumed as omega.
 \item Update Wolf Position: The position of the wolf is updated depending on the position
-      of three wolfes (alpha, betha and delta). 
+      of three wolfes (alpha, betha and delta).
 \item Replace the alpha, betha or delta if new position of wolf have better fitness.
-\item Check termination criteria, if termination criterion is satisfied, return the 
+\item Check termination criteria, if termination criterion is satisfied, return the
       alpha as the optimal solution for given problem. Otherwise, back to Update Wolf Position steps.
 }
 }
 \examples{
-################################## 
-## Optimizing the sphere function
+##################################
+## Optimizing the step function
 
-# define sphere function as objective function
-sphere <- function(X){
-    return(sum(X^2))
+# define step function as objective function
+step <- function(x){
+    result <- sum(abs((x+0.5))^2)
+    return(result)
 }
 
-## Define parameter 
+## Define parameter
 numVar <- 5
-rangeVar <- matrix(c(-10,10), nrow=2)
+rangeVar <- matrix(c(-100,100), nrow=2)
 
-## calculate the optimum solution using Grey Wolf Optimizer 
-resultGWO <- GWO(sphere, optimType="MIN", numVar, numPopulation=20, 
+## calculate the optimum solution using grey wolf optimizer
+resultGWO <- GWO(step, optimType="MIN", numVar, numPopulation=20,
                  maxIter=100, rangeVar)
 
-## calculate the optimum value using sphere function
-optimum.value <- sphere(resultGWO)
+## calculate the optimum value using step function
+optimum.value <- step(resultGWO)
 
 }
 \references{
-Seyedali Mirjalili, Seyed Mohammad Mirjalili, Andrew Lewis, Grey Wolf Optimizer, 
-Advances in Engineering Software, Volume 69, 2014, Pages 46-61, ISSN 0965-9978, 
+Seyedali Mirjalili, Seyed Mohammad Mirjalili, Andrew Lewis, Grey Wolf Optimizer,
+Advances in Engineering Software, Volume 69, 2014, Pages 46-61, ISSN 0965-9978,
 https://doi.org/10.1016/j.advengsoft.2013.12.007
 }
 \seealso{

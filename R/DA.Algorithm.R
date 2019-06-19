@@ -5,7 +5,7 @@
 #  Author: Iip
 #  Co-author: -
 #  Supervisors: Lala Septem Riza, Eddy Prasetyo Nugroho
-#   
+#
 #
 #  This package is free software: you can redistribute it and/or modify it under
 #  the terms of the GNU General Public License as published by the Free Software
@@ -16,89 +16,95 @@
 #  A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 #
 #############################################################################
-#' This is the internal function that implements Dragonfly 
-#' Algorithm. It is used to solve continuous optimization tasks. 
+#' This is the internal function that implements Dragonfly
+#' Algorithm. It is used to solve continuous optimization tasks.
 #' Users do not need to call it directly,
 #' but just use \code{\link{metaOpt}}.
 #'
-#' This algorithm was proposed by Mirjalili in 2016. The main inspiration of the 
-#' DA algorithm originates from the static and dynamic swarming behaviours of 
-#' dragonflies in nature. Two essential phases of optimization, exploration and 
-#' exploitation, are designed by modelling the social interaction of dragonflies 
-#' in navigating, searching for foods, and avoiding enemies when swarming 
+#' This algorithm was proposed by (Mirjalili, 2015). The main inspiration of the
+#' DA algorithm originates from the static and dynamic swarming behaviours of
+#' dragonflies in nature. Two essential phases of optimization, exploration and
+#' exploitation, are designed by modelling the social interaction of dragonflies
+#' in navigating, searching for foods, and avoiding enemies when swarming
 #' dynamically or statistically.
-#' 
-#' In order to find the optimal solution, the algorithm follow the following steps. 
+#'
+#' In order to find the optimal solution, the algorithm follow the following steps.
 #' \itemize{
-#' \item Initialization: Initialize the first population of dragonflies randomly, 
+#' \item Initialization: Initialize the first population of dragonflies randomly,
 #'       calculate the fitness of dragonflies and find the best dragonfly as
 #'       food source and the worst dragonfly as enemy position.
-#' \item Calculating Behaviour Weight that affecting fly direction and distance.  
-#'       First, find the neighbouring dragonflies for each dragonfly then calculate the behaviour weight. 
+#' \item Calculating Behaviour Weight that affecting fly direction and distance.
+#'       First, find the neighbouring dragonflies for each dragonfly then calculate the behaviour weight.
 #'       The behaviour weight consist of separation, alignment, cohesion, attracted toward food sources
 #'       and distraction from enemy. The neighbouring dragonfly determined by the neighbouring radius
 #'       that increasing linearly for each iteration.
 #' \item Update the position each dragonfly using behaviour weight and the delta (same as velocity in PSO).
 #' \item Calculate the fitness and update food and enemy position
-#' \item Check termination criteria, if termination criterion is satisfied, return the 
+#' \item Check termination criteria, if termination criterion is satisfied, return the
 #'       food position as the optimal solution for given problem. Otherwise, back to Calculating Behaviour Weight steps.
-#'} 
-#' 
+#'}
+#'
 #' @title Optimization using Dragonfly Algorithm
 #'
 #' @param FUN an objective function or cost function,
 #'
 #' @param optimType a string value that represent the type of optimization.
 #'        There are two option for this arguments: \code{"MIN"} and \code{"MAX"}.
-#'        The default value is \code{"MIN"}, which the function will do minimization. 
+#'        The default value is \code{"MIN"}, which the function will do minimization.
 #'        Otherwise, you can use \code{"MAX"} for maximization problem.
+#'        The default value is \code{"MIN"}.
 #'
-#' @param numVar a positive integer to determine the number variable.
+#' @param numVar a positive integer to determine the number variables.
 #'
-#' @param numPopulation a positive integer to determine the number population.
+#' @param numPopulation a positive integer to determine the number populations. The default value is 40.
 #'
-#' @param maxIter a positive integer to determine the maximum number of iteration.
+#' @param maxIter a positive integer to determine the maximum number of iterations. The default value is 500.
 #'
-#' @param rangeVar a matrix (\eqn{2 \times n}) containing the range of variables, 
+#' @param rangeVar a matrix (\eqn{2 \times n}) containing the range of variables,
 #'        where \eqn{n} is the number of variables, and first and second rows
-#'        are the lower bound (minimum) and upper bound (maximum) values, respectively. 
-#'        If all variable have equal upper bound, you can define \code{rangeVar} as 
+#'        are the lower bound (minimum) and upper bound (maximum) values, respectively.
+#'        If all variable have equal upper bound, you can define \code{rangeVar} as
 #'        matrix (\eqn{2 \times 1}).
-#' 
+#'
 #' @importFrom graphics plot
 #' @importFrom stats runif
 #' @importFrom utils setTxtProgressBar txtProgressBar
 #' @seealso \code{\link{metaOpt}}
-#' 
+#'
 #' @examples
-#' ################################## 
-#' ## Optimizing the sphere function
-#' 
-#' # define sphere function as objective function
-#' sphere <- function(X){
-#'     return(sum(X^2))
+#' ##################################
+#' ## Optimizing the schewefel's problem 1.2 function
+#'
+#' # define schewefel's problem 1.2 function as objective function
+#' schewefels1.2 <- function(x){
+#'   dim <- length(x)
+#'   result <- 0
+#'     for(i in 1:dim){
+#'        result <- result + sum(x[1:i])^2
+#'    }
+#'   return(result)
 #' }
-#' 
-#' ## Define parameter 
+#'
+#' ## Define parameter
 #' numVar <- 5
 #' rangeVar <- matrix(c(-10,10), nrow=2)
-#' 
-#' ## calculate the optimum solution using Dragonfly Algorithm 
-#' resultDA <- DA(sphere, optimType="MIN", numVar, numPopulation=20, 
+#'
+#' ## calculate the optimum solution using dragonfly algorithm
+#' resultDA <- DA(schewefels1.2, optimType="MIN", numVar, numPopulation=20,
 #'                  maxIter=100, rangeVar)
-#' 
-#' ## calculate the optimum value using sphere function
-#' optimum.value <- sphere(resultDA)
-#' 
-#' @return \code{Vector [v1, v2, ..., vn]} where \code{n} is number variable 
+#'
+#' ## calculate the optimum value using schewefel's problem 1.2 function
+#' optimum.value <- schewefels1.2(resultDA)
+#'
+#' @return \code{Vector [v1, v2, ..., vn]} where \code{n} is number variable
 #'         and \code{vn} is value of \code{n-th} variable.
-#' 
+#'
 #' @references
-#' Seyedali Mirjalili. 2015. Dragonfly algorithm: a new meta-heuristic optimization 
-#' technique for solving single-objective, discrete, and multi-objective problems. 
-#' Neural Comput. Appl. 27, 4 (May 2015), 1053-1073. 
-#' DOI=https://doi.org/10.1007/s00521-015-1920-1 
-#' 
+#' Seyedali Mirjalili. 2015. Dragonfly algorithm: a new meta-heuristic optimization
+#' technique for solving single-objective, discrete, and multi-objective problems.
+#' Neural Comput. Appl. 27, 4 (May 2015), 1053-1073.
+#' DOI=https://doi.org/10.1007/s00521-015-1920-1
+#'
 #' @export
 
 DA <- function(FUN, optimType="MIN", numVar, numPopulation=40, maxIter=500, rangeVar){
@@ -108,7 +114,7 @@ DA <- function(FUN, optimType="MIN", numVar, numPopulation=40, maxIter=500, rang
 	# parsing rangeVar to lowerBound and upperBound
 	lowerBound <- rangeVar[1,]
 	upperBound <- rangeVar[2,]
-	
+
 	# if user define the same upper bound and lower bound for each dimension
 	if(dimension==1){
 		dimension <- numVar
@@ -120,10 +126,10 @@ DA <- function(FUN, optimType="MIN", numVar, numPopulation=40, maxIter=500, rang
 
 	# generate initial population of dragonfly
 	dragonfly <- generateRandom(numPopulation, dimension, lowerBound, upperBound)
-	
+
 	# find the best position
 	bestPos <- engineDA(FUN, optimType, maxIter, lowerBound, upperBound, dragonfly)
-	
+
 	return(bestPos)
 }
 
@@ -168,12 +174,12 @@ engineDA <- function(FUN, optimType, maxIter, lowerBound, upperBound, dragonfly)
 	progressbar <- txtProgressBar(min = 0, max = maxIter, style = 3)
 
 	# code is translated from MATLAB version
-	# you can found the original 
+	# you can found the original
 	for (t in 1:maxIter){
 		# define neighbour distance
 		# increasing for each iteration
 		r <- (upperBound-lowerBound)/4+((upperBound-lowerBound)*(t/maxIter)*2)
-		
+
 		# w is inertia weight
 		# decreased lineraly from 0.9 to 0.4
 		w <- 0.9-t*((0.9-0.4)/maxIter)
@@ -230,7 +236,7 @@ engineDA <- function(FUN, optimType, maxIter, lowerBound, upperBound, dragonfly)
 			if(neighboursNo > 1){
 				A <- colSums(neighboursDelta)/neighboursNo
 			}else{
-				
+
 			}
 
 			# Cohesion
@@ -291,23 +297,23 @@ engineDA <- function(FUN, optimType, maxIter, lowerBound, upperBound, dragonfly)
 		for (i in 1:nrow(dragonfly)){
 			fitness <- optimType*FUN(dragonfly[i,])
 			# update food position
-	        if(fitness<Ffood){ 
+	        if(fitness<Ffood){
 	            Ffood <- fitness
 	            food <- dragonfly[i,]
 	        }
 	        # update enemy position
-	        if(fitness>Fenemy){ 
+	        if(fitness>Fenemy){
 	            Fenemy <- fitness
 	            enemy <- dragonfly[i,]
 	        }
 	    }
-		
+
 		# save the best fitness for iteration t
 		curve[t] <- Ffood
-		
+
 		setTxtProgressBar(progressbar, t)
 	}
-	
+
 	close(progressbar)
 	curve <- curve*optimType
 	# plot(c(1:maxIter), curve, type="l", main="DA", log="y", xlab="Number Iteration", ylab = "Best Fittness",

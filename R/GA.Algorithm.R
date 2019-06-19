@@ -5,7 +5,7 @@
 #  Author: Iip
 #  Co-author: -
 #  Supervisors: Lala Septem Riza, Eddy Prasetyo Nugroho
-#   
+#
 #
 #  This package is free software: you can redistribute it and/or modify it under
 #  the terms of the GNU General Public License as published by the Free Software
@@ -16,94 +16,95 @@
 #  A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 #
 #############################################################################
-#' This is the internal function that implements Genetic 
-#' Algorithm. It is used to solve continuous optimization tasks. 
+#' This is the internal function that implements Genetic
+#' Algorithm. It is used to solve continuous optimization tasks.
 #' Users do not need to call it directly,
 #' but just use \code{\link{metaOpt}}.
 #'
-#' Genetic algorithms (GA) were invented by John Holland in the 1960 and 
-#' were developed by Holland and his students and colleagues at the 
-#' University of Michigan in the 1960 and the 1970. GA are commonly used 
-#' to generate high-quality solutions to optimization and search problems 
-#' by relying on bio-inspired operators such as mutation, crossover and 
+#' Genetic algorithms (GA) were invented by John Holland in the 1960 and
+#' were developed by Holland and his students and colleagues at the
+#' University of Michigan in the 1960 and the 1970. GA are commonly used
+#' to generate high-quality solutions to optimization and search problems
+#' by relying on bio-inspired operators such as mutation, crossover and
 #' selection.
-#' 
-#' In order to find the optimal solution, the algorithm follow the following steps. 
+#'
+#' In order to find the optimal solution, the algorithm follow the following steps.
 #' \itemize{
-#' \item Initialization: Initialize the first population randomly, 
+#' \item Initialization: Initialize the first population randomly,
 #'       calculate the fitness and save the best fitness as bestPopulation.
-#' \item Selection: Select set of individual parent for doing crossover. Number of parent 
-#'       determined by the crossover probability which defined by user. 
+#' \item Selection: Select set of individual parent for doing crossover. Number of parent
+#'       determined by the crossover probability which defined by user.
 #'       In this work, we use method called Roulette Whell Selection.
 #' \item Crossover: Doing crossover between two parent from Selection step.
 #'       This step done by selecting two point randomly and switching the values between them.
-#' \item Mutation : All individu in population have a chance to mutate. When mutation occurs, we 
+#' \item Mutation : All individu in population have a chance to mutate. When mutation occurs, we
 #'       generate the random values to replace the old one.
 #' \item Calculate the fitness of each individual and update bestPopulation.
-#' \item Check termination criteria, if termination criterion is satisfied, return the 
+#' \item Check termination criteria, if termination criterion is satisfied, return the
 #'       bestPopulation as the optimal solution for given problem. Otherwise, back to Selection steps.
-#'} 
-#' 
+#'}
+#'
 #' @title Optimization using Genetic Algorithm
 #'
 #' @param FUN an objective function or cost function,
 #'
 #' @param optimType a string value that represent the type of optimization.
 #'        There are two option for this arguments: \code{"MIN"} and \code{"MAX"}.
-#'        The default value is \code{"MIN"}, which the function will do minimization. 
+#'        The default value is \code{"MIN"}, which the function will do minimization.
 #'        Otherwise, you can use \code{"MAX"} for maximization problem.
+#'        The default value is \code{"MIN"}.
 #'
-#' @param numVar a positive integer to determine the number variable.
+#' @param numVar a positive integer to determine the number variables.
 #'
-#' @param numPopulation a positive integer to determine the number population.
+#' @param numPopulation a positive integer to determine the number populations. The default value is 40.
 #'
-#' @param maxIter a positive integer to determine the maximum number of iteration.
+#' @param maxIter a positive integer to determine the maximum number of iterations. The default value is 500.
 #'
-#' @param rangeVar a matrix (\eqn{2 \times n}) containing the range of variables, 
+#' @param rangeVar a matrix (\eqn{2 \times n}) containing the range of variables,
 #'        where \eqn{n} is the number of variables, and first and second rows
-#'        are the lower bound (minimum) and upper bound (maximum) values, respectively. 
-#'        If all variable have equal upper bound, you can define \code{rangeVar} as 
+#'        are the lower bound (minimum) and upper bound (maximum) values, respectively.
+#'        If all variable have equal upper bound, you can define \code{rangeVar} as
 #'        matrix (\eqn{2 \times 1}).
 #'
-#' @param Pm a positive integer to determine mutation probability.
+#' @param Pm a positive integer to determine mutation probability. The default value is 0.1.
 #'
-#' @param Pc a positive integer to determine crossover probability.
+#' @param Pc a positive integer to determine crossover probability. The default value is 0.8.
 #'
 #' @importFrom graphics plot
 #' @importFrom stats runif
 #' @importFrom utils setTxtProgressBar txtProgressBar
 #' @seealso \code{\link{metaOpt}}
-#' 
+#'
 #' @examples
-#' ################################## 
+#' ##################################
 #' ## Optimizing the sphere function
-#' 
+#'
 #' # define sphere function as objective function
-#' sphere <- function(X){
-#'     return(sum(X^2))
+#' sphere <- function(x){
+#'     return(sum(x^2))
 #' }
-#' 
-#' ## Define parameter 
+#'
+#' ## Define parameter
 #' Pm <- 0.1
 #' Pc <- 0.8
 #' numVar <- 5
 #' rangeVar <- matrix(c(-10,10), nrow=2)
-#' 
-#' ## calculate the optimum solution using Genetic Algorithm 
-#' resultGA <- GA(sphere, optimType="MIN", numVar, numPopulation=20, 
+#'
+#' ## calculate the optimum solution using Genetic Algorithm
+#' resultGA <- GA(sphere, optimType="MIN", numVar, numPopulation=20,
 #'                  maxIter=100, rangeVar, Pm, Pc)
-#' 
+#'
 #' ## calculate the optimum value using sphere function
 #' optimum.value <- sphere(resultGA)
-#' 
-#' @return \code{Vector [v1, v2, ..., vn]} where \code{n} is number variable 
+#'
+#' @return \code{Vector [v1, v2, ..., vn]} where \code{n} is number variable
 #'         and \code{vn} is value of \code{n-th} variable.
-#' 
+#'
 #' @references
-#' Holland, J. H. 1975. Adaptation in Natural and Artificial Systems. 
+#' Holland, J. H. 1975. Adaptation in Natural and Artificial Systems.
 #' University of Michigan Press. (Second edition: MIT Press, 1992.)
-#' 
-#' Melanie Mitchell. 1998. An Introduction to Genetic Algorithms. 
+#'
+#' Melanie Mitchell. 1998. An Introduction to Genetic Algorithms.
 #' MIT Press, Cambridge, MA, USA.
 #' @export
 
@@ -114,7 +115,7 @@ GA <- function(FUN, optimType="MIN", numVar, numPopulation=40, maxIter=500, rang
 	# parsing rangeVar to lowerBound and upperBound
 	lowerBound <- rangeVar[1,]
 	upperBound <- rangeVar[2,]
-	
+
 	# if user define the same upper bound and lower bound for each dimension
 	if(dimension==1){
 		dimension <- numVar
@@ -126,10 +127,10 @@ GA <- function(FUN, optimType="MIN", numVar, numPopulation=40, maxIter=500, rang
 
 	# generate initial population of candidate
 	candidate <- generateRandom(numPopulation, dimension, lowerBound, upperBound)
-	
+
 	# find the best position
 	bestPos <- engineGA(FUN, optimType, maxIter, lowerBound, upperBound, Pm, Pc, candidate)
-	
+
 	return(bestPos)
 }
 
@@ -219,13 +220,13 @@ engineGA <- function(FUN, optimType, maxIter, lowerBound, upperBound, Pm, Pc, ca
 
 		bestPos <- candidate[1,]
 		FbestPos <- candidateFitness[1]
-		
+
 		# save the best fitness for iteration t
 		curve[t] <- FbestPos
-		
+
 		setTxtProgressBar(progressbar, t)
 	}
-	
+
 	close(progressbar)
 	curve <- curve*optimType
 	# plot(c(1:maxIter), curve, type="l", main="GA", log="y", xlab="Number Iteration", ylab = "Best Fittness",

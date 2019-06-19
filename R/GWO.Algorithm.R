@@ -5,7 +5,7 @@
 #  Author: Iip
 #  Co-author: -
 #  Supervisors: Lala Septem Riza, Eddy Prasetyo Nugroho
-#   
+#
 #
 #  This package is free software: you can redistribute it and/or modify it under
 #  the terms of the GNU General Public License as published by the Free Software
@@ -16,83 +16,85 @@
 #  A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 #
 #############################################################################
-#' This is the internal function that implements Grey Wolf Optimizer 
-#' Algorithm. It is used to solve continuous optimization tasks. 
+#' This is the internal function that implements Grey Wolf Optimizer
+#' Algorithm. It is used to solve continuous optimization tasks.
 #' Users do not need to call it directly,
 #' but just use \code{\link{metaOpt}}.
 #'
-#' This algorithm was proposed by Mirjalili in 2014, inspired by the behaviour of grey
-#' wolf (Canis lupus). The GWO algorithm mimics the leadership hierarchy and hunting 
-#' mechanism of grey wolves in nature. Four types of grey wolves such as alpha, beta, 
-#' delta, and omega are employed for simulating the leadership hierarchy. 
-#' In addition, the three main steps of hunting, searching for prey, encircling prey, 
+#' This algorithm was proposed by (Mirjalili, 2014), inspired by the behaviour of grey
+#' wolf (Canis lupus). The GWO algorithm mimics the leadership hierarchy and hunting
+#' mechanism of grey wolves in nature. Four types of grey wolves such as alpha, beta,
+#' delta, and omega are employed for simulating the leadership hierarchy.
+#' In addition, the three main steps of hunting, searching for prey, encircling prey,
 #' and attacking prey, are implemented.
-#' 
-#' In order to find the optimal solution, the algorithm follow the following steps. 
+#'
+#' In order to find the optimal solution, the algorithm follow the following steps.
 #' \itemize{
-#' \item Initialization: Initialize the first population of grey wolf randomly, 
+#' \item Initialization: Initialize the first population of grey wolf randomly,
 #'       calculate their fitness and find the best wolf as alpha, second best as
 #'       beta and third best as delta. The rest of wolf assumed as omega.
 #' \item Update Wolf Position: The position of the wolf is updated depending on the position
-#'       of three wolfes (alpha, betha and delta). 
+#'       of three wolfes (alpha, betha and delta).
 #' \item Replace the alpha, betha or delta if new position of wolf have better fitness.
-#' \item Check termination criteria, if termination criterion is satisfied, return the 
+#' \item Check termination criteria, if termination criterion is satisfied, return the
 #'       alpha as the optimal solution for given problem. Otherwise, back to Update Wolf Position steps.
-#'} 
-#' 
+#'}
+#'
 #' @title Optimization using Grey Wolf Optimizer
 #'
 #' @param FUN an objective function or cost function,
 #'
 #' @param optimType a string value that represent the type of optimization.
 #'        There are two option for this arguments: \code{"MIN"} and \code{"MAX"}.
-#'        The default value is \code{"MIN"}, which the function will do minimization. 
+#'        The default value is \code{"MIN"}, which the function will do minimization.
 #'        Otherwise, you can use \code{"MAX"} for maximization problem.
+#'        The default value is \code{"MIN"}.
 #'
-#' @param numVar a positive integer to determine the number variable.
+#' @param numVar a positive integer to determine the number variables.
 #'
-#' @param numPopulation a positive integer to determine the number population.
+#' @param numPopulation a positive integer to determine the number populations. The default value is 40.
 #'
-#' @param maxIter a positive integer to determine the maximum number of iteration.
+#' @param maxIter a positive integer to determine the maximum number of iterations. The default value is 500.
 #'
-#' @param rangeVar a matrix (\eqn{2 \times n}) containing the range of variables, 
+#' @param rangeVar a matrix (\eqn{2 \times n}) containing the range of variables,
 #'        where \eqn{n} is the number of variables, and first and second rows
-#'        are the lower bound (minimum) and upper bound (maximum) values, respectively. 
-#'        If all variable have equal upper bound, you can define \code{rangeVar} as 
+#'        are the lower bound (minimum) and upper bound (maximum) values, respectively.
+#'        If all variable have equal upper bound, you can define \code{rangeVar} as
 #'        matrix (\eqn{2 \times 1}).
 #'
 #' @importFrom graphics plot
 #' @importFrom stats runif
 #' @importFrom utils setTxtProgressBar txtProgressBar
 #' @seealso \code{\link{metaOpt}}
-#' 
+#'
 #' @examples
-#' ################################## 
-#' ## Optimizing the sphere function
-#' 
-#' # define sphere function as objective function
-#' sphere <- function(X){
-#'     return(sum(X^2))
+#' ##################################
+#' ## Optimizing the step function
+#'
+#' # define step function as objective function
+#' step <- function(x){
+#'     result <- sum(abs((x+0.5))^2)
+#'     return(result)
 #' }
-#' 
-#' ## Define parameter 
+#'
+#' ## Define parameter
 #' numVar <- 5
-#' rangeVar <- matrix(c(-10,10), nrow=2)
-#' 
-#' ## calculate the optimum solution using Grey Wolf Optimizer 
-#' resultGWO <- GWO(sphere, optimType="MIN", numVar, numPopulation=20, 
+#' rangeVar <- matrix(c(-100,100), nrow=2)
+#'
+#' ## calculate the optimum solution using grey wolf optimizer
+#' resultGWO <- GWO(step, optimType="MIN", numVar, numPopulation=20,
 #'                  maxIter=100, rangeVar)
-#' 
-#' ## calculate the optimum value using sphere function
-#' optimum.value <- sphere(resultGWO)
-#' 
-#' @return \code{Vector [v1, v2, ..., vn]} where \code{n} is number variable 
+#'
+#' ## calculate the optimum value using step function
+#' optimum.value <- step(resultGWO)
+#'
+#' @return \code{Vector [v1, v2, ..., vn]} where \code{n} is number variable
 #'         and \code{vn} is value of \code{n-th} variable.
-#' 
+#'
 #' @references
-#' Seyedali Mirjalili, Seyed Mohammad Mirjalili, Andrew Lewis, Grey Wolf Optimizer, 
-#' Advances in Engineering Software, Volume 69, 2014, Pages 46-61, ISSN 0965-9978, 
-#' https://doi.org/10.1016/j.advengsoft.2013.12.007 
+#' Seyedali Mirjalili, Seyed Mohammad Mirjalili, Andrew Lewis, Grey Wolf Optimizer,
+#' Advances in Engineering Software, Volume 69, 2014, Pages 46-61, ISSN 0965-9978,
+#' https://doi.org/10.1016/j.advengsoft.2013.12.007
 #' @export
 
 GWO <- function(FUN, optimType="MIN", numVar, numPopulation=40, maxIter=500, rangeVar){
@@ -102,7 +104,7 @@ GWO <- function(FUN, optimType="MIN", numVar, numPopulation=40, maxIter=500, ran
 	# parsing rangeVar to lowerBound and upperBound
 	lowerBound <- rangeVar[1,]
 	upperBound <- rangeVar[2,]
-	
+
 	# if user define the same upper bound and lower bound for each dimension
 	if(dimension==1){
 		dimension <- numVar
@@ -114,10 +116,10 @@ GWO <- function(FUN, optimType="MIN", numVar, numPopulation=40, maxIter=500, ran
 
 	# generate initial population of wolf
 	wolf <- generateRandom(numPopulation, dimension, lowerBound, upperBound)
-	
+
 	# find the best position
 	bestPos <- engineGWO(FUN, optimType, maxIter, lowerBound, upperBound, wolf)
-	
+
 	return(bestPos)
 }
 
@@ -164,28 +166,28 @@ engineGWO <- function(FUN, optimType, maxIter, lowerBound, upperBound, wolf){
 
 				A1 <- 2*a*r1-a
 	            C1 <- 2*r2
-	            
+
 	            D_alpha <- abs(C1*alpha[j]-wolf[i,j])
 	            X1 <- alpha[j]-A1*D_alpha
-	                       
+
 	            r1 <- runif(1)
 	            r2 <- runif(1)
-	            
+
 	            A2 <- 2*a*r1-a
 	            C2 <- 2*r2
-	            
+
 	            D_beta <- abs(C2*beta[j]-wolf[i,j])
 	            X2 <- beta[j]-A2*D_beta
-	            
+
 	            r1 <- runif(1)
 	            r2 <- runif(1)
-	            
+
 	            A3 <- 2*a*r1-a
 	            C3 <- 2*r2
-	            
+
 	            D_delta <- abs(C3*delta[j]-wolf[i,j])
 	            X3 <- delta[j]-A3*D_delta
-	            
+
 	            wolf[i,j]=(X1+X2+X3)/3
 			}
 
@@ -195,28 +197,28 @@ engineGWO <- function(FUN, optimType, maxIter, lowerBound, upperBound, wolf){
 			fitness <- optimType*FUN(wolf[i,])
 
 			# update alpha, beta and delta
-	        if(fitness<Falpha){ 
+	        if(fitness<Falpha){
 	            Falpha <- fitness
 	            alpha <- wolf[i,]
 	        }
-	        
+
 	        if(fitness>Falpha & fitness<Fbeta){
 	            Fbeta <- fitness
 	            beta <- wolf[i,]
 	        }
-	        
+
 	        if(fitness>Falpha & fitness>Fbeta & fitness<Fdelta){
 	            Fdelta <- fitness
 	            delta <- wolf[i,]
 	        }
 		}
-		
+
 		# save the best fitness for iteration t
 		curve[t] <- Falpha
-		
+
 		setTxtProgressBar(progressbar, t)
 	}
-	
+
 	close(progressbar)
 	curve <- curve*optimType
 	# plot(c(1:maxIter), curve, type="l", main="GWO", log="y", xlab="Number Iteration", ylab = "Best Fittness",

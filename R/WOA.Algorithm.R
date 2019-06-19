@@ -5,7 +5,7 @@
 #  Author: Iip
 #  Co-author: -
 #  Supervisors: Lala Septem Riza, Eddy Prasetyo Nugroho
-#   
+#
 #
 #  This package is free software: you can redistribute it and/or modify it under
 #  the terms of the GNU General Public License as published by the Free Software
@@ -16,82 +16,83 @@
 #  A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 #
 #############################################################################
-#' This is the internal function that implements Whale Optimization 
-#' Algorithm. It is used to solve continuous optimization tasks. 
+#' This is the internal function that implements Whale Optimization
+#' Algorithm. It is used to solve continuous optimization tasks.
 #' Users do not need to call it directly,
 #' but just use \code{\link{metaOpt}}.
 #'
-#' This algorithm was proposed by Mirjalili in 2016, which mimics the 
-#' social behavior of humpback whales. The algorithm is inspired by the 
+#' This algorithm was proposed by (Mirjalili, 2016), which mimics the
+#' social behavior of humpback whales. The algorithm is inspired by the
 #' bubble-net hunting strategy.
-#' 
-#' In order to find the optimal solution, the algorithm follow the following steps. 
+#'
+#' In order to find the optimal solution, the algorithm follow the following steps.
 #' \itemize{
-#' \item Initialization: Initialize the first population of whale randomly, 
+#' \item Initialization: Initialize the first population of whale randomly,
 #'       calculate the fitness of whale and find the best whale position as the
 #'       best position obtained so far.
-#' \item Update Whale Position: Update the whale position using bubble-net hunting 
-#'       strategy. The whale position will depend on the best whale position obtained so far. 
+#' \item Update Whale Position: Update the whale position using bubble-net hunting
+#'       strategy. The whale position will depend on the best whale position obtained so far.
 #'       Otherwise random whale choosen if the specific condition meet.
 #' \item Update the best position if there are new whale that have better fitness
-#' \item Check termination criteria, if termination criterion is satisfied, return the 
+#' \item Check termination criteria, if termination criterion is satisfied, return the
 #'       best position as the optimal solution for given problem. Otherwise, back to Update Whale Position steps.
-#'} 
-#' 
+#'}
+#'
 #' @title Optimization using Whale Optimization Algorithm
 #'
 #' @param FUN an objective function or cost function,
 #'
 #' @param optimType a string value that represent the type of optimization.
 #'        There are two option for this arguments: \code{"MIN"} and \code{"MAX"}.
-#'        The default value is \code{"MIN"}, which the function will do minimization. 
+#'        The default value is \code{"MIN"}, which the function will do minimization.
 #'        Otherwise, you can use \code{"MAX"} for maximization problem.
+#'        The default value is \code{"MIN"}.
 #'
-#' @param numVar a positive integer to determine the number variable.
+#' @param numVar a positive integer to determine the number variables.
 #'
-#' @param numPopulation a positive integer to determine the number population.
+#' @param numPopulation a positive integer to determine the number populations. The default value is 40.
 #'
-#' @param maxIter a positive integer to determine the maximum number of iteration.
+#' @param maxIter a positive integer to determine the maximum number of iterations. The default value is 500.
 #'
-#' @param rangeVar a matrix (\eqn{2 \times n}) containing the range of variables, 
+#' @param rangeVar a matrix (\eqn{2 \times n}) containing the range of variables,
 #'        where \eqn{n} is the number of variables, and first and second rows
-#'        are the lower bound (minimum) and upper bound (maximum) values, respectively. 
-#'        If all variable have equal upper bound, you can define \code{rangeVar} as 
+#'        are the lower bound (minimum) and upper bound (maximum) values, respectively.
+#'        If all variable have equal upper bound, you can define \code{rangeVar} as
 #'        matrix (\eqn{2 \times 1}).
-#' 
+#'
 #' @importFrom graphics plot
 #' @importFrom stats runif
 #' @importFrom utils setTxtProgressBar txtProgressBar
 #' @seealso \code{\link{metaOpt}}
-#' 
+#'
 #' @examples
-#' ################################## 
+#' ##################################
 #' ## Optimizing the sphere function
-#' 
+#'
 #' # define sphere function as objective function
-#' sphere <- function(X){
-#'     return(sum(X^2))
+#' sphere <- function(x){
+#'     return(sum(x^2))
 #' }
-#' 
-#' ## Define parameter 
+#'
+#' ## Define parameter
 #' numVar <- 5
 #' rangeVar <- matrix(c(-10,10), nrow=2)
-#' 
-#' ## calculate the optimum solution using Ant Lion Optimizer 
-#' resultWOA <- WOA(sphere, optimType="MIN", numVar, numPopulation=20, 
+#'
+#' ## calculate the optimum solution using Ant Lion Optimizer
+#' resultWOA <- WOA(sphere, optimType="MIN", numVar, numPopulation=20,
 #'                  maxIter=100, rangeVar)
-#' 
+#'
 #' ## calculate the optimum value using sphere function
 #' optimum.value <- sphere(resultWOA)
-#' 
-#' @return \code{Vector [v1, v2, ..., vn]} where \code{n} is number variable 
+#'
+#' @return \code{Vector [v1, v2, ..., vn]} where \code{n} is number variable
 #'         and \code{vn} is value of \code{n-th} variable.
-#' 
+#'
 #' @references
-#' Seyedali Mirjalili, Andrew Lewis, The Whale Optimization Algorithm, 
-#' Advances in Engineering Software, Volume 95, 2016, Pages 51-67, 
+#' Seyedali Mirjalili, Andrew Lewis, The Whale Optimization Algorithm,
+#' Advances in Engineering Software, Volume 95, 2016, Pages 51-67,
 #' ISSN 0965-9978, https://doi.org/10.1016/j.advengsoft.2016.01.008
-#' 
+#'
 #' @export
 
 WOA <- function(FUN, optimType="MIN", numVar, numPopulation=40, maxIter=500, rangeVar){
@@ -101,7 +102,7 @@ WOA <- function(FUN, optimType="MIN", numVar, numPopulation=40, maxIter=500, ran
 	# parsing rangeVar to lowerBound and upperBound
 	lowerBound <- rangeVar[1,]
 	upperBound <- rangeVar[2,]
-	
+
 	# if user define the same upper bound and lower bound for each dimension
 	if(dimension==1){
 		dimension <- numVar
@@ -113,10 +114,10 @@ WOA <- function(FUN, optimType="MIN", numVar, numPopulation=40, maxIter=500, ran
 
 	# generate initial population of whale
 	whale <- generateRandom(numPopulation, dimension, lowerBound, upperBound)
-	
+
 	# find the best position
 	bestPos <- engineWOA(FUN, optimType, maxIter, lowerBound, upperBound, whale)
-	
+
 	return(bestPos)
 }
 
@@ -148,7 +149,7 @@ engineWOA <- function(FUN, optimType, maxIter, lowerBound, upperBound, whale){
 	for (t in 1:maxIter){
 		# value a decreased linearly from 2 to 0
 		a <- 2-t*((2)/maxIter)
-		
+
 		# value a2 decreased linearly from -1 to -2
 		a2 <- -1+t*((-1)/maxIter)
 
@@ -169,7 +170,7 @@ engineWOA <- function(FUN, optimType, maxIter, lowerBound, upperBound, whale){
             # p is random number to define the probability to select
             # shrinking encircling mechanism or spiral model
             p <- runif(1)
-			
+
 			for (j in 1:ncol(whale)) {
 	            if(p < 0.5){
 	            	if(abs(A) >= 1){
@@ -189,7 +190,7 @@ engineWOA <- function(FUN, optimType, maxIter, lowerBound, upperBound, whale){
 	            	distance <- abs(bestPos[j]-whale[i,j])
 	            	whale[i,j] <- distance*exp(b*l)*cos(l*2*pi)+bestPos[j]
 	            }
-	            
+
 			}
 
 			# bring back whale if it go outside search space
@@ -198,18 +199,18 @@ engineWOA <- function(FUN, optimType, maxIter, lowerBound, upperBound, whale){
 			fitness <- optimType*FUN(whale[i,])
 
 			# update bestPos
-	        if(fitness<FbestPos){ 
+	        if(fitness<FbestPos){
 	            FbestPos <- fitness
 	            bestPos <- whale[i,]
 	        }
 		}
-		
+
 		# save the best fitness for iteration t
 		curve[t] <- FbestPos
-		
+
 		setTxtProgressBar(progressbar, t)
 	}
-	
+
 	close(progressbar)
 	curve <- curve*optimType
 	# plot(c(1:maxIter), curve, type="l", main="WOA", log="y", xlab="Number Iteration", ylab = "Best Fittness",

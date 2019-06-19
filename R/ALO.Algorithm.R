@@ -5,7 +5,7 @@
 #  Author: Iip
 #  Co-author: -
 #  Supervisors: Lala Septem Riza, Eddy Prasetyo Nugroho
-#   
+#
 #
 #  This package is free software: you can redistribute it and/or modify it under
 #  the terms of the GNU General Public License as published by the Free Software
@@ -16,83 +16,84 @@
 #  A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 #
 #############################################################################
-#' This is the internal function that implements Ant Lion Optimizer 
-#' Algorithm. It is used to solve continuous optimization tasks. 
+#' This is the internal function that implements Ant Lion Optimizer
+#' Algorithm. It is used to solve continuous optimization tasks.
 #' Users do not need to call it directly,
 #' but just use \code{\link{metaOpt}}.
 #'
-#' This algorithm was proposed by Mirjalili in 2015. The Ant Lion Optimizer (ALO)
+#' This algorithm was proposed by (Mirjalili, 2015). The Ant Lion Optimizer (ALO)
 #' algorithm mimics the hunting mechanism of antlions in nature. Five main steps
 #' of hunting prey such as the random walk of ants, building traps, entrapment of
 #' ants in traps, catching preys, and re-building traps are implemented.
-#' 
-#' In order to find the optimal solution, the algorithm follow the following steps. 
+#'
+#' In order to find the optimal solution, the algorithm follow the following steps.
 #' \itemize{
-#' \item Initialization: Initialize the first population of ants and antlions randomly, 
+#' \item Initialization: Initialize the first population of ants and antlions randomly,
 #'       calculate the fitness of ants and antlions and find the best antlions as the
 #'       elite (determined optimum).
-#' \item Update Ants Position: Select an antlion using Roulette Whell then update ants 
-#'       position based on random walk around selected antlion and elite. 
+#' \item Update Ants Position: Select an antlion using Roulette Whell then update ants
+#'       position based on random walk around selected antlion and elite.
 #'       Furthermore, calculate the fitness of all ants.
 #' \item Replace an antlion with its corresponding ant, if it becomes fitter
 #' \item Update elite if an antlion becomes fitter than the elite
-#' \item Check termination criteria, if termination criterion is satisfied, return the 
+#' \item Check termination criteria, if termination criterion is satisfied, return the
 #'       elite as the optimal solution for given problem. Otherwise, back to Update Ants Position steps.
-#'} 
-#' 
+#'}
+#'
 #' @title Optimization using Ant Lion Optimizer
 #'
 #' @param FUN an objective function or cost function,
 #'
 #' @param optimType a string value that represent the type of optimization.
 #'        There are two option for this arguments: \code{"MIN"} and \code{"MAX"}.
-#'        The default value is \code{"MIN"}, which the function will do minimization. 
+#'        The default value is \code{"MIN"}, which the function will do minimization.
 #'        Otherwise, you can use \code{"MAX"} for maximization problem.
+#'        The default value is \code{"MIN"}.
 #'
-#' @param numVar a positive integer to determine the number variable.
+#' @param numVar a positive integer to determine the number variables.
 #'
-#' @param numPopulation a positive integer to determine the number population.
+#' @param numPopulation a positive integer to determine the number populations. The default value is 40.
 #'
-#' @param maxIter a positive integer to determine the maximum number of iteration.
+#' @param maxIter a positive integer to determine the maximum number of iterations. The default value is 500.
 #'
-#' @param rangeVar a matrix (\eqn{2 \times n}) containing the range of variables, 
+#' @param rangeVar a matrix (\eqn{2 \times n}) containing the range of variables,
 #'        where \eqn{n} is the number of variables, and first and second rows
-#'        are the lower bound (minimum) and upper bound (maximum) values, respectively. 
-#'        If all variable have equal upper bound, you can define \code{rangeVar} as 
+#'        are the lower bound (minimum) and upper bound (maximum) values, respectively.
+#'        If all variable have equal upper bound, you can define \code{rangeVar} as
 #'        matrix (\eqn{2 \times 1}).
 #'
 #' @importFrom graphics plot
 #' @importFrom stats runif
 #' @importFrom utils setTxtProgressBar txtProgressBar
 #' @seealso \code{\link{metaOpt}}
-#' 
+#'
 #' @examples
-#' ################################## 
-#' ## Optimizing the sphere function
-#' 
-#' # define sphere function as objective function
-#' sphere <- function(X){
-#'     return(sum(X^2))
+#' ##################################
+#' ## Optimizing the schewefel's problem 2.22 function
+#'
+#' # define schewefel's problem 2.22 function as objective function
+#' schewefels2.22 <- function(x){
+#'    return(sum(abs(x)+prod(abs(x))))
 #' }
-#' 
-#' ## Define parameter 
+#'
+#' ## Define parameter
 #' numVar <- 5
 #' rangeVar <- matrix(c(-10,10), nrow=2)
-#' 
-#' ## calculate the optimum solution using Ant Lion Optimizer 
-#' resultALO <- ALO(sphere, optimType="MIN", numVar, numPopulation=20, 
-#'                  maxIter=100, rangeVar)
-#' 
-#' ## calculate the optimum value using sphere function
-#' optimum.value <- sphere(resultALO)
-#' 
-#' @return \code{Vector [v1, v2, ..., vn]} where \code{n} is number variable 
+#'
+#' ## calculate the optimum solution using Ant Lion Optimizer
+#' resultALO <- ALO(schewefels2.22, optimType="MIN", numVar,
+#' numPopulation=20, maxIter=100, rangeVar)
+#'
+#' ## calculate the optimum value using schewefel's problem 2.22 function
+#' optimum.value <- schewefels2.22(resultALO)
+#'
+#' @return \code{Vector [v1, v2, ..., vn]} where \code{n} is number variable
 #'         and \code{vn} is value of \code{n-th} variable.
-#' 
+#'
 #' @references
-#' Seyedali Mirjalili, The Ant Lion Optimizer, Advances in Engineering Software, 
-#' Volume 83, 2015, Pages 80-98, ISSN 0965-9978, 
-#' https://doi.org/10.1016/j.advengsoft.2015.01.010 
+#' Seyedali Mirjalili, The Ant Lion Optimizer, Advances in Engineering Software,
+#' Volume 83, 2015, Pages 80-98, ISSN 0965-9978,
+#' https://doi.org/10.1016/j.advengsoft.2015.01.010
 #' @export
 
 ALO <- function(FUN, optimType="MIN", numVar, numPopulation=40, maxIter=500, rangeVar){
@@ -102,7 +103,7 @@ ALO <- function(FUN, optimType="MIN", numVar, numPopulation=40, maxIter=500, ran
 	# parsing rangeVar to lowerBound and upperBound
 	lowerBound <- rangeVar[1,]
 	upperBound <- rangeVar[2,]
-	
+
 	# if user define the same upper bound and lower bound for each dimension
 	if(dimension==1){
 		dimension <- numVar
@@ -118,7 +119,7 @@ ALO <- function(FUN, optimType="MIN", numVar, numPopulation=40, maxIter=500, ran
 
 	# find the best position
 	bestPos <- engine.ALO(FUN, optimType, maxIter, lowerBound, upperBound, antlion, ant)
-	
+
 	return(bestPos)
 }
 
@@ -153,10 +154,10 @@ engine.ALO <- function(FUN, optimType, maxIter, lowerBound, upperBound, antlion,
 		for (i in 1:nrow(ant)){
 			# select an antlion by roulette whell selection
 			roulette.index <- rouletteWhell(1/antlionFitness)
-			# calculate random walk around the selected antlion 
+			# calculate random walk around the selected antlion
 			RA <- randomWalk(maxIter, lowerBound, upperBound, antlion[roulette.index,], t)
-			
-			# calculate random walk around the elites (best antlion) 
+
+			# calculate random walk around the elites (best antlion)
 			RE <- randomWalk(maxIter, lowerBound, upperBound, bestPos, t)
 
 			ant[i,] <- (RA[t,]+RE[t,])/2
@@ -192,10 +193,10 @@ engine.ALO <- function(FUN, optimType, maxIter, lowerBound, upperBound, antlion,
 		}
 		# save the best fitness for iteration t
 		curve[t] <- FbestPos
-		
+
 		setTxtProgressBar(progressbar, t)
 	}
-	
+
 	close(progressbar)
 	curve <- curve*optimType
 	# plot(c(1:maxIter), curve, type="l", main="ALO", log="y", xlab="Number Iteration", ylab = "Best Fittness",
